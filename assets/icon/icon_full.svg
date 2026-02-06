@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" rx="220" fill="#0D1B3E"/>
+
+  <g transform="translate(512 512) rotate(-3) translate(-512 -512)">
+    <rect x="272" y="162" width="490" height="678" rx="10" fill="rgba(0,0,0,0.25)"/>
+    <rect x="265" y="155" width="490" height="678" rx="10" fill="#F5F0E8"/>
+
+    <rect x="290" y="178" width="440" height="48" rx="4" fill="#0D1B3E"/>
+    <text x="510" y="211" font-family="Georgia, 'Times New Roman', serif" font-size="28"
+          fill="#F5F0E8" text-anchor="middle" font-weight="bold" letter-spacing="4">DPRESSE</text>
+
+    <line x1="290" y1="238" x2="730" y2="238" stroke="#8A7E6D" stroke-width="1.5"/>
+    <line x1="290" y1="242" x2="730" y2="242" stroke="#8A7E6D" stroke-width="0.5"/>
+
+    <!-- Dragon - scaled to fill width nicely -->
+    <g transform="translate(290 268) scale(1.28)">
+      <path d="
+M 330,105
+C 320,96 308,90 296,88
+L 290,86
+L 286,52
+L 282,83
+C 270,86 256,90 244,94
+
+L 225,50
+L 208,18
+
+L 172,0
+L 188,30
+L 155,4
+L 172,35
+L 140,10
+L 155,42
+L 124,22
+L 138,60
+
+L 128,88
+
+C 112,95 94,98 76,96
+C 52,92 32,78 18,60
+C 8,44 4,32 2,24
+C 4,34 10,50 18,62
+C 34,84 54,96 70,104
+
+C 78,108 84,114 90,120
+
+L 96,142
+L 100,150
+L 106,148
+L 104,144
+L 98,134
+
+C 118,128 144,124 164,124
+
+L 170,142
+L 174,150
+L 180,148
+L 178,142
+L 172,134
+
+C 194,126 220,118 248,112
+C 276,106 300,104 320,108
+L 330,105
+Z
+" fill="#0D1B3E" stroke="#0D1B3E" stroke-width="0.5" stroke-linejoin="round"/>
+      <circle cx="300" cy="89" r="3.5" fill="#F5F0E8"/>
+    </g>
+
+    <line x1="310" y1="480" x2="710" y2="480" stroke="#8A7E6D" stroke-width="1"/>
+
+    <!-- Left column -->
+    <rect x="310" y="498" width="185" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="310" y="516" width="175" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="310" y="534" width="185" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="310" y="552" width="160" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="310" y="570" width="180" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="310" y="588" width="170" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="310" y="606" width="185" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="310" y="624" width="150" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="310" y="642" width="175" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="310" y="660" width="185" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="310" y="678" width="160" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="310" y="696" width="180" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="310" y="714" width="140" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="310" y="732" width="175" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="310" y="750" width="185" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="310" y="768" width="150" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="310" y="786" width="100" height="5" rx="2.5" fill="#C4BAA9"/>
+
+    <!-- Right column -->
+    <rect x="520" y="498" width="190" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="520" y="516" width="170" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="520" y="534" width="190" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="520" y="552" width="155" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="520" y="570" width="185" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="520" y="588" width="175" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="520" y="606" width="190" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="520" y="624" width="160" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="520" y="642" width="180" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="520" y="660" width="190" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="520" y="678" width="150" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="520" y="696" width="185" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="520" y="714" width="170" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="520" y="732" width="190" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="520" y="750" width="155" height="5" rx="2.5" fill="#C4BAA9"/>
+    <rect x="520" y="768" width="125" height="5" rx="2.5" fill="#C4BAA9"/>
+
+    <line x1="510" y1="498" x2="510" y2="793" stroke="#D5CBB8" stroke-width="0.75"/>
+  </g>
+</svg>
