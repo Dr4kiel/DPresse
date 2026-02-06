@@ -11,7 +11,7 @@ class AppConstants {
   static const String searchAdvancedPath = '/Search/Advanced';
   static const String searchResultPath = '/Search/Result';
   static const String searchGetPagePath = '/Search/GetPage';
-  static const String articleViewPath = '/Document/View';
+  static const String articleViewPath = '/Document/ViewMobile';
   static const String sourcesFilterPath = '/Criteria/SourcesFilter';
 
   // Cookie settings

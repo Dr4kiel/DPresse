@@ -25,22 +25,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
+  /// Extract meaningful keywords from an RSS title for Europresse search.
+  String _cleanTitleForSearch(String title) {
+    const stopWords = {
+      'le', 'la', 'les', 'l', 'de', 'du', 'des', 'un', 'une',
+      'et', 'en', 'au', 'aux', 'à', 'a', 'ce', 'se', 'sa', 'son',
+      'ses', 'on', 'ou', 'ne', 'pas', 'que', 'qui', 'qu', 'par',
+      'pour', 'sur', 'dans', 'avec', 'est', 'sont', 'il', 'elle',
+      'nous', 'vous', 'ils', 'elles', 'cette', 'ces', 'mais',
+      'plus', 'très', 'aussi', 'après', 'd', 'n', 's',
+    };
+
+    // Remove special characters, keep letters/digits/spaces
+    final cleaned = title
+        .replaceAll(RegExp(r'[«»""''":;,\.\-–—…!?\(\)\[\]{}\/\\]'), ' ')
+        .replaceAll(RegExp(r"'+"), ' ');
+
+    // Split into words, remove stop words, keep meaningful ones
+    final words = cleaned
+        .split(RegExp(r'\s+'))
+        .where((w) => w.length > 1 && !stopWords.contains(w.toLowerCase()))
+        .toList();
+
+    // Take up to 8 key words to avoid overly specific query
+    return words.take(8).join(' ');
+  }
+
   Future<void> _onFeedItemTap(FeedItem item) async {
     if (!mounted) return;
+
+    final searchQuery = _cleanTitleForSearch(item.title);
 
     // Show loading indicator
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Recherche: ${item.title}'),
+        content: Text('Recherche: $searchQuery'),
         duration: const Duration(seconds: 1),
       ),
     );
 
-    // Search for article in Europresse by title
+    // Search for article in Europresse using cleaned keywords
     final searchNotifier = ref.read(searchProvider.notifier);
-    searchNotifier.setSearchInTitle(true);
+    searchNotifier.setSearchInTitle(false);
     searchNotifier.setDateRange(AppConstants.dateRangeWeek);
-    await searchNotifier.search(item.title);
+    await searchNotifier.search(searchQuery);
 
     if (!mounted) return;
 

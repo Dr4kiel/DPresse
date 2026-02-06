@@ -66,7 +66,7 @@ class SearchNotifier extends StateNotifier<SearchState> {
       query: query,
       isLoading: true,
       results: [],
-      currentPage: 1,
+      currentPage: 0,
       hasMore: true,
       error: null,
     );
@@ -78,7 +78,7 @@ class SearchNotifier extends StateNotifier<SearchState> {
         dateRange: state.dateRange,
       );
 
-      final results = await _europresseService.getSearchResults(page: 1);
+      final results = await _europresseService.getSearchResults(page: 0);
       state = state.copyWith(
         results: results,
         isLoading: false,

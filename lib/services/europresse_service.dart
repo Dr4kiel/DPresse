@@ -9,6 +9,7 @@ import 'html_parser.dart';
 class EuropresseService {
   final AppHttpClient _client;
   String? _csrfToken;
+  String _lastResultPath = '/Search/ResultMobile';
   EuropresseService(this._client);
 
   /// Fetch CSRF token from the search reading page
@@ -58,6 +59,9 @@ class EuropresseService {
     _csrfToken = null;
   }
 
+  /// URL-encode a single value for form data
+  String _enc(String v) => Uri.encodeQueryComponent(v);
+
   /// Search Europresse
   Future<void> search({
     String keywords = '',
@@ -69,57 +73,67 @@ class EuropresseService {
   }) async {
     final token = await _getCsrfToken();
 
-    final data = {
-      'Keywords': keywords,
-      'CriteriaKeys[0].Operator': '&',
-      'CriteriaKeys[0].Key': 'TIT_HEAD',
-      'CriteriaKeys[0].Text': titleQuery,
-      'CriteriaKeys[1].Operator': '&',
-      'CriteriaKeys[1].Key': 'LEAD',
-      'CriteriaKeys[1].Text': '',
-      'CriteriaKeys[2].Operator': '&',
-      'CriteriaKeys[2].Key': 'AUT_BY',
-      'CriteriaKeys[2].Text': '',
-      'DateFilter.DateRange': dateRange.toString(),
-      'DateFilter.DateStart': dateStart ?? '',
-      'DateFilter.DateStop': dateStop ?? '',
-      'SourcesForm': sourcesForm.toString(),
-      '__RequestVerificationToken': token,
-    };
+    // Build Keywords value: prefix with TIT_HEAD= for title search
+    String kw;
+    if (titleQuery.isNotEmpty) {
+      kw = 'TIT_HEAD=$titleQuery';
+    } else {
+      kw = keywords;
+    }
 
-    // POST search — a 302 to ResultMobile is expected
-    await _client.post(
-      AppConstants.searchAdvancedPath,
-      data: data,
+    // Build form body matching browser format (POST to /Search/Reading)
+    final body = [
+      '__RequestVerificationToken=${_enc(token)}',
+      'Keywords=${_enc(kw)}',
+      'DateFilter.DateRange=$dateRange',
+      'DateFilter.DateStart=${_enc(dateStart ?? '')}',
+      'DateFilter.DateStop=${_enc(dateStop ?? '')}',
+      'CriteriaSet=0',
+      'SearchType=Mobile',
+    ].join('&');
+
+    // POST search to /Search/Reading (same endpoint, handles both GET form + POST submit)
+    final postResponse = await _client.post(
+      AppConstants.searchReadingPath,
+      data: body,
       options: Options(
         contentType: Headers.formUrlEncodedContentType,
         followRedirects: false,
         validateStatus: (status) => status != null && status < 400,
+        headers: {
+          'Origin': _client.baseUrl,
+          'Referer': '${_client.baseUrl}${AppConstants.searchReadingPath}',
+        },
       ),
     );
 
-    // Follow the redirect to initialize results in the server session.
-    await _client.get(AppConstants.searchResultPath);
+    // Follow the actual redirect to initialize results in the server session.
+    final location = postResponse.headers.value('location') ?? '';
+    final redirectPath = Uri.parse(location).path;
+    if (redirectPath.isEmpty) {
+      throw Exception('Pas de redirection après la recherche');
+    }
+    _lastResultPath = redirectPath;
+
+    await _client.get(redirectPath);
   }
 
-  /// Get paginated search results
-  Future<List<SearchResult>> getSearchResults({int page = 1}) async {
+  /// Get paginated search results (pageNo is 0-indexed)
+  Future<List<SearchResult>> getSearchResults({int page = 0}) async {
     final response = await _client.get(
       AppConstants.searchGetPagePath,
       queryParameters: {
         'pageNo': page,
         'docPerPage': AppConstants.docsPerPage,
       },
-      headers: {'X-Requested-With': 'XMLHttpRequest'},
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Referer': '${_client.baseUrl}$_lastResultPath',
+        'Accept': 'text/html, */*; q=0.01',
+      },
     );
 
-    final html = response.data ?? '';
-    print('[Europresse] GetPage response (${html.length} chars)');
-    if (html.isNotEmpty) {
-      final preview = html.length > 500 ? html.substring(0, 500) : html;
-      print('[Europresse] GetPage preview:\n$preview');
-    }
-    return HtmlParserService.parseSearchResults(html);
+    return HtmlParserService.parseSearchResults(response.data ?? '');
   }
 
   /// Get full article content
@@ -134,22 +148,7 @@ class EuropresseService {
       },
     );
 
-    final html = response.data ?? '';
-    // Debug: check article HTML structure
-    final titleIdx = html.indexOf('titreArticle');
-    final contentIdx = html.indexOf('docOcurrContainer');
-    final docViewIdx = html.indexOf('docView');
-    print('[Europresse] Article HTML (${html.length} chars): titreArticle@$titleIdx, docOcurrContainer@$contentIdx, docView@$docViewIdx');
-    if (html.length > 500) {
-      // Show body area
-      final bodyIdx = html.indexOf('<body');
-      if (bodyIdx > 0) {
-        final end = (bodyIdx + 1500).clamp(0, html.length);
-        print('[Europresse] Article body:\n${html.substring(bodyIdx, end)}');
-      }
-    }
-    final parsed = HtmlParserService.parseArticle(html);
-    print('[Europresse] Parsed article: title="${parsed.title}", html=${parsed.html.length} chars');
+    final parsed = HtmlParserService.parseArticle(response.data ?? '');
     return Article(
       id: docKey,
       title: parsed.title,

@@ -10,6 +10,13 @@ class AppHttpClient {
       followRedirects: true,
       maxRedirects: 10,
       validateStatus: (status) => status != null && status < 400,
+      headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 '
+            '(KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.5',
+      },
     ));
     _dio.interceptors.add(LogInterceptor(
       requestHeader: true,
@@ -22,16 +29,15 @@ class AppHttpClient {
   }
 
   Dio get dio => _dio;
+  String get baseUrl => _dio.options.baseUrl;
 
   void setBaseUrl(String domain) {
     _dio.options.baseUrl = 'https://$domain';
-    print('[HttpClient] baseUrl set to: https://$domain');
   }
 
   /// Set the raw cookie string to be sent with every request
   void setRawCookies(String cookieString) {
     _dio.options.headers['Cookie'] = cookieString;
-    print('[HttpClient] cookies set (${cookieString.length} chars): ${cookieString.substring(0, cookieString.length.clamp(0, 80))}...');
   }
 
   /// Append a cookie (name=value) to the existing cookie header
@@ -61,10 +67,6 @@ class AppHttpClient {
     dynamic data,
     Options? options,
   }) async {
-    final response = await _dio.post<String>(path, data: data, options: options);
-    final body = response.data ?? '';
-    final preview = body.length > 500 ? body.substring(0, 500) : body;
-    print('[HttpClient] POST $path → ${response.statusCode}, body preview: $preview');
-    return response;
+    return _dio.post<String>(path, data: data, options: options);
   }
 }
