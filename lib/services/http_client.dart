@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 class AppHttpClient {
   late final Dio _dio;
@@ -18,14 +19,16 @@ class AppHttpClient {
         'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.5',
       },
     ));
-    _dio.interceptors.add(LogInterceptor(
-      requestHeader: true,
-      requestBody: false,
-      responseHeader: true,
-      responseBody: false,
-      error: true,
-      logPrint: (o) => print('[Dio] $o'),
-    ));
+    if (kDebugMode) {
+      _dio.interceptors.add(LogInterceptor(
+        requestHeader: true,
+        requestBody: false,
+        responseHeader: true,
+        responseBody: false,
+        error: true,
+        logPrint: (o) => debugPrint('[Dio] $o'),
+      ));
+    }
   }
 
   Dio get dio => _dio;
