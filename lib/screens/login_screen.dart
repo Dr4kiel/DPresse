@@ -17,15 +17,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isLoading = true;
   String _currentUrl = '';
   bool _loginAttempted = false;
+  String? _webError;
 
   @override
   void initState() {
     super.initState();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setUserAgent(
+        'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 '
+        '(KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36',
+      )
       ..setNavigationDelegate(NavigationDelegate(
         onPageStarted: (url) {
-          if (mounted) setState(() => _isLoading = true);
+          if (mounted) setState(() { _isLoading = true; _webError = null; });
         },
         onPageFinished: (url) {
           if (mounted) {
@@ -38,6 +43,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         },
         onNavigationRequest: (request) {
           return NavigationDecision.navigate;
+        },
+        onWebResourceError: (error) {
+          if (mounted && (error.isForMainFrame ?? false)) {
+            setState(() {
+              _isLoading = false;
+              _webError = 'Connexion impossible (${error.errorCode}).\n'
+                  'Le serveur BNF est peut-etre temporairement indisponible.';
+            });
+          }
         },
       ));
     _clearCookiesAndLoad();
@@ -143,6 +157,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           WebViewWidget(controller: _controller),
           if (_isLoading)
             const LinearProgressIndicator(),
+          if (_webError != null)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.wifi_off, size: 48,
+                        color: theme.colorScheme.error),
+                    const SizedBox(height: 16),
+                    Text(
+                      _webError!,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 24),
+                    FilledButton.icon(
+                      onPressed: () {
+                        setState(() => _webError = null);
+                        _loginAttempted = false;
+                        _clearCookiesAndLoad();
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Reessayer'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );

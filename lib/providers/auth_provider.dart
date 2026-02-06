@@ -33,7 +33,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final AppHttpClient _httpClient;
 
   AuthNotifier(this._authService, this._httpClient) : super(const AuthState()) {
+    _httpClient.onSessionExpired = _onSessionExpired;
     _tryRestoreSession();
+  }
+
+  void _onSessionExpired() {
+    if (state.isLoggedIn) {
+      _authService.clearAuth();
+      state = const AuthState(isLoggedIn: false, isLoading: false);
+    }
   }
 
   Future<void> _tryRestoreSession() async {

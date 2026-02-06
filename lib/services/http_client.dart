@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 
 class AppHttpClient {
   late final Dio _dio;
+  VoidCallback? onSessionExpired;
 
   AppHttpClient() {
     _dio = Dio(BaseOptions(
@@ -19,6 +20,14 @@ class AppHttpClient {
         'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.5',
       },
     ));
+    _dio.interceptors.add(InterceptorsWrapper(
+      onError: (error, handler) {
+        if (_isSessionError(error)) {
+          onSessionExpired?.call();
+        }
+        handler.next(error);
+      },
+    ));
     if (kDebugMode) {
       _dio.interceptors.add(LogInterceptor(
         requestHeader: true,
@@ -29,6 +38,18 @@ class AppHttpClient {
         logPrint: (o) => debugPrint('[Dio] $o'),
       ));
     }
+  }
+
+  /// Detect errors that indicate the EZproxy session has expired
+  bool _isSessionError(DioException error) {
+    // Connection reset = EZproxy dropped the connection (session expired)
+    if (error.type == DioExceptionType.connectionError) return true;
+
+    // 403 Forbidden = session no longer valid
+    final status = error.response?.statusCode;
+    if (status == 403) return true;
+
+    return false;
   }
 
   Dio get dio => _dio;
