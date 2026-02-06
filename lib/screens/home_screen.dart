@@ -19,10 +19,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Load feeds on first build
-    Future.microtask(() {
-      ref.read(feedsProvider.notifier).refreshFeeds();
-    });
   }
 
   /// Extract meaningful keywords from an RSS title for Europresse search.

@@ -95,6 +95,7 @@ class FeedsNotifier extends StateNotifier<FeedsState> {
       state = state.copyWith(feeds: _defaultFeeds);
       await _save();
     }
+    await refreshFeeds();
   }
 
   Future<void> _save() async {
